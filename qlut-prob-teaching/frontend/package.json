@@ -12,10 +12,11 @@
     "babel-plugin-import": "^1.13.3",
     "core-js": "^3.6.5",
     "echarts": "^5.1.2",
+    "element-ui": "^2.15.6",
     "less-loader": "^7.3.0",
+    "video.js": "^7.10.2",
     "vue": "^2.6.11",
-    "vue-router": "^3.2.0",
-    "video.js": "^7.10.2"
+    "vue-router": "^3.2.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
@@ -31,20 +32,6 @@
     "eslint-plugin-standard": "^4.0.0",
     "eslint-plugin-vue": "^6.2.2",
     "vue-template-compiler": "^2.6.11"
-  },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
-    },
-    "extends": [
-      "plugin:vue/essential",
-      "@vue/standard"
-    ],
-    "parserOptions": {
-      "parser": "babel-eslint"
-    },
-    "rules": {}
   },
   "browserslist": [
     "> 1%",
