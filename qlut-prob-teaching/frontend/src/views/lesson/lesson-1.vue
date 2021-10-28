@@ -21,7 +21,7 @@
       </el-col>
     </el-row>
     <el-row>
-      <el-col :span="4"><div class="grid-content  bg-purple"></div></el-col>
+      <el-col :span="4"><div class="grid-content"></div></el-col>
       <el-col :span="16">
         <div class="grid-content question" v-for="(question, index) in questions " :key="index">
           <template v-if="index == showIndex">
@@ -29,12 +29,23 @@
               <p>问题：</p>
               <img v-for="(t, index) in question.desc" :src="t" :key="index">
             </div>
-            <div>
-              <el-checkbox-group v-model="question.checkList">
-                <el-checkbox :label="item.match (/\-\S\./g)[0].replace(/[-|\.]/g,'')" v-for="item in question.choices">
-                  <img :src="item" alt="">
-                </el-checkbox>
-              </el-checkbox-group>
+            <div class="box">
+              <draggable
+                         :list="question.choices"
+                         :group="{ name: 'question', pull: 'clone', put: false }" @change="log">
+                <el-card shadow="never" v-for="(item, index) in question.choices" :key="index">
+                  <img :src="item" class="image">
+                </el-card>
+              </draggable>
+            </div>
+            <div class="box answer-box" style="border: 1px dashed;">
+              <p>请将上方选项中的标准答案拖入改区域内，并注意顺序。点击答案右上角 [X] 可删除选项。</p>
+              <draggable :list="question.checkList" group="question" @change="log">
+                <el-card shadow="never" v-for="(item, index) in question.checkList" :key="index">
+                  <img :src="item" class="image">
+                  <i class="el-icon-close" style="float: right" @click="removeAt(index)"></i>
+                </el-card>
+              </draggable>
             </div>
             <div style="text-align: right">
               <el-button style="" type="primary" v-on:click="doClick()">确定</el-button>
@@ -42,7 +53,7 @@
           </template>
         </div>
       </el-col>
-      <el-col :span="4"><div class="grid-content bg-purple"></div></el-col>
+      <el-col :span="4"><div class="grid-content"></div></el-col>
     </el-row>
   </div>
 </template>
@@ -51,9 +62,13 @@
 
 import videojs from 'video.js'
 import 'video.js/dist/video-js.css'
+import draggable from 'vuedraggable'
 
 export default {
   name: 'lesson-1',
+  components: {
+    draggable
+  },
   data () {
     return {
       player: null,
@@ -140,20 +155,30 @@ export default {
   },
   methods: {
     doClick() {
-      let checkList = this.questions[this.showIndex].checkList.sort()
-      let answer = this.questions[this.showIndex].answer.sort()
+      let checkList = this.questions[this.showIndex].checkList.map((e) => {
+        return e.match (/\-\S\./g)[0].replace(/[-|\.]/g,'')
+      })
+      let answer = this.questions[this.showIndex].answer
       // console.log(answer.join()==checkList.join())
       if( answer.join()==checkList.join() ) {
         this.showIndex = -1
         this.player.play()
       }
+    },
+    removeAt(idx) {
+      this.questions[this.showIndex].checkList.splice(idx, 1);
+    },
+    log(event) {
+      // console.log('1', this.questions[0].checkList)
+      // console.log('2', this.questions[1].checkList)
+      // console.log('3', this.questions[2].checkList)
     }
   }
 }
 
 </script>
 
-<style>
+<style scoped>
   .el-row {
     margin-bottom: 20px;
   }
@@ -163,14 +188,41 @@ export default {
   .bg-purple {
     /*background: #d3dce6;*/
   }
-  .bg-purple-light {
-    background: #e5e9f2;
-  }
   .grid-content {
     border-radius: 4px;
     min-height: 36px;
   }
-  .el-checkbox{
-    margin-right: 50px;
+  ::v-deep .el-card {
+    min-width: 20px;
+    max-width: 200px;
+    display: inline-block;
+    margin-right: 10px;
+    cursor: pointer;
+  }
+  .image {
+    height: 40px;
+    width: 40px;
+    object-fit: contain;
+  }
+  .box {
+    padding-left: 10px;
+    padding-right: 10px;
+    min-height: 60px;
+    min-width: 100px;
+    margin-bottom: 10px;
+  }
+  .answer-box {
+    border: 1px dotted;
+  }
+  .answer-box p {
+    color: darkgray;
+  }
+  ::v-deep .el-card__body{
+    position: relative;
+  }
+  ::v-deep .el-card__body i{
+    position: absolute;
+    top: 5px;
+    right: 5px;
   }
 </style>
